@@ -7,15 +7,17 @@ loadSlack = function () {
     this.incomingURL = incomingURL;
     this._template = template;
     this.settings = settings;
+    this.thread_ts = '';
   };
 
   if(typeof EventListener === 'undefined') EventListener = loadEventListener();
   _.extend(Slack.prototype, EventListener.prototype);
 
   // 受信したメッセージをtimesheetsに投げる
-  Slack.prototype.receiveMessage = function(message) {
-    var username = String(message.user_name);
-    var body = String(message['text']);
+  Slack.prototype.receiveMessage = function(params) {
+    var username = String(params.user_name);
+    var body = String(params.text);
+    this.thread_ts = params.ts;
 
     // 特定のアカウントには反応しない
     var ignore_users = (this.settings.get("無視するユーザ") || '').toLowerCase().replace(/^\s*(.*?)\s*$/, "$1").split(/\s*,\s*/);
@@ -30,7 +32,8 @@ loadSlack = function () {
   // メッセージ送信
   Slack.prototype.send = function(message, options) {
     options = _.clone(options || {});
-    options["text"] = message;
+    options.text = message;
+    if (this.thread_ts !== '') options.thread_ts = this.thread_ts;
 
     var send_options = {
       method: "post",
