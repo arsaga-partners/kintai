@@ -845,7 +845,11 @@ loadTimesheets = function loadTimesheets(exports) {
       var data = this.storage.get(username, this.datetime);
       if (!data.signIn || data.signIn === '-') {
         this.storage.set(username, this.datetime, { signIn: this.datetime });
-        this.responder.template("出勤", username, signInTimeStr);
+        if (username === "ryota") {
+          this.responder.send("おはよおぉぉぉぉこんちはぁぁぁぁこんばんはぁぁぁおやすみぃぃぃぃ起きてぇぇぇぇぇえええええ！！！！！！！！！！！！！！！！！！(" + signInTimeStr + ")");
+        } else {
+          this.responder.template("出勤", username, signInTimeStr);
+        }
       } else {
         // 更新の場合は時間を明示する必要がある
         if (!!this.time) {
